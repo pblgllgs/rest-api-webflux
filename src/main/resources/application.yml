@@ -1,0 +1,7 @@
+server.error.include-message: always
+
+spring:
+  r2dbc:
+    url: r2dbc:mariadb://localhost:3306/db_webflux
+    username: root
+    password: password
