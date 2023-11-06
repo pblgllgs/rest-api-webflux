@@ -25,10 +25,10 @@ public class ProductRouter {
                 .build();
         return RouterFunctions.route()
                 .GET(path.toString(), handler::getAll)
-                .GET(path.toString() + PRODUCT_ID,handler::getOne)
+                .GET(path + PRODUCT_ID,handler::getOne)
                 .POST(path.toString(),handler::save)
-                .PUT(path.toString() + PRODUCT_ID,handler::update)
-                .DELETE(path.toString()+ PRODUCT_ID,handler::delete)
+                .PUT(path + PRODUCT_ID,handler::update)
+                .DELETE(path + PRODUCT_ID,handler::delete)
                 .build();
     }
 

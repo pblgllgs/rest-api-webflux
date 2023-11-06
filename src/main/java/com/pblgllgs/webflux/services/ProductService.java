@@ -1,5 +1,6 @@
 package com.pblgllgs.webflux.services;
 
+import com.pblgllgs.webflux.dto.ProductDto;
 import com.pblgllgs.webflux.exceptions.CustomException;
 import com.pblgllgs.webflux.models.Product;
 import com.pblgllgs.webflux.repository.ProductRepository;
@@ -31,41 +32,41 @@ public class ProductService {
                 );
     }
 
-    public Mono<Product> save(Product product) {
-        Mono<Boolean> existName = productRepository.findByName(product.getName()).hasElement();
+    public Mono<Product> save(ProductDto productDto) {
+        Mono<Boolean> existName = productRepository.findByName(productDto.name()).hasElement();
         return existName
                 .flatMap(exists -> Boolean.TRUE.equals(exists)
                         ?
                         Mono.error(
                                 new CustomException(
-                                        "Product with name: " + product.getName() + " already exists"
+                                        "Product with name: " + productDto.name() + " already exists"
                                         , HttpStatus.BAD_REQUEST
                                 )
                         )
                         :
-                        productRepository.save(product)
+                        productRepository.save(Product.builder().name(productDto.name()).price(productDto.price()).build())
                 );
     }
 
-    public Mono<Product> update(int id, Product product) {
+    public Mono<Product> update(int id, ProductDto productDto) {
         Mono<Boolean> existsId = productRepository.findById(id).hasElement();
-        Mono<Boolean> isRepeatedName = productRepository.repeatedName(id, product.getName()).hasElement();
+        Mono<Boolean> isRepeatedName = productRepository.repeatedName(id, productDto.name()).hasElement();
         return existsId.flatMap(exists -> Boolean.TRUE.equals(exists) ?
                 isRepeatedName.flatMap(isRepeated -> {
                     if (Boolean.TRUE.equals(isRepeated)) {
                         return Mono.error(
                                 new CustomException(
-                                        "Product name: " + product.getName() + " already in use",
+                                        "Product name: " + productDto.name() + " already in use",
                                         HttpStatus.BAD_REQUEST
                                 )
                         );
                     }
-                    return productRepository.save(new Product(id, product.getName(), product.getPrice()));
+                    return productRepository.save(new Product(id, productDto.name(), productDto.price()));
                 })
                 :
                 Mono.error(
                         new CustomException(
-                                "Product with id: " + product.getId() + " dont exists",
+                                "Product with id: " + id + " dont exists",
                                 HttpStatus.NOT_FOUND
                         )
                 )

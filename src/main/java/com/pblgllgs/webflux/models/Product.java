@@ -1,9 +1,6 @@
 package com.pblgllgs.webflux.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -12,6 +9,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @Table
 @ToString
+@Builder
 public class Product {
 
     @Id

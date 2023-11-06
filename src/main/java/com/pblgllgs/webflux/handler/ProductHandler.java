@@ -1,7 +1,9 @@
 package com.pblgllgs.webflux.handler;
 
+import com.pblgllgs.webflux.dto.ProductDto;
 import com.pblgllgs.webflux.models.Product;
 import com.pblgllgs.webflux.services.ProductService;
+import com.pblgllgs.webflux.validation.ObjectValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -17,6 +19,7 @@ import reactor.core.publisher.Mono;
 public class ProductHandler {
 
     private final ProductService productService;
+    private final ObjectValidator objectValidator;
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
         Flux<Product> products = productService.getAll();
@@ -29,8 +32,8 @@ public class ProductHandler {
     }
 
     public Mono<ServerResponse> save(ServerRequest request) {
-        Mono<Product> product = request.bodyToMono(Product.class);
-        return product.flatMap(p ->
+        Mono<ProductDto> productDto = request.bodyToMono(ProductDto.class).doOnNext(objectValidator::validate);
+        return productDto.flatMap(p ->
                 ServerResponse
                         .ok()
                         .contentType(MediaType.APPLICATION_JSON)
@@ -39,9 +42,9 @@ public class ProductHandler {
     }
 
     public Mono<ServerResponse> update(ServerRequest request) {
-        Mono<Product> product = request.bodyToMono(Product.class);
+        Mono<ProductDto> productDto = request.bodyToMono(ProductDto.class).doOnNext(objectValidator::validate);
         int id = Integer.parseInt(request.pathVariable("id"));
-        return product.flatMap(p ->
+        return productDto.flatMap(p ->
                 ServerResponse
                         .ok()
                         .contentType(MediaType.APPLICATION_JSON)
